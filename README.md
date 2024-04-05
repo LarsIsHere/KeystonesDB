@@ -32,18 +32,21 @@ set(['key1','key4','key5'], 'foo bar');
 - `backup(path, async)` -
 - `contains(key)` -
 - `remove(key)` -
+- `addValue(key, number)` -
+- `subtractValue(key, number)` -
+- `renameKey(oldKey, newKey)` -
+- `isOfType(key, dataType)` -
+- `` - more soon
+#### Arrays
 - `push(key, value, createIfMissing)` -
 - `removeFromArray(key, value)` -
 - `arrayLength(key)` -
 - `getItemFromArray(key, index)` -
 - `updateItemInArray(key, index, newValue)` -
 - `clearArray(key)` -
-- `addValue(key, number)` -
-- `subtractValue(key, number)` -
-- `renameKey(oldKey, newKey)` -
-- `isOfType(key, dataType)` -
-- `keyExists(key)` - soon
-- `` - soon
 ### Filtering & Conditions
 - `matchesCondition(key, conditionFunction)` -
 - `filterArray(key, conditionFunction)` - 
+
+
+## Changelog
