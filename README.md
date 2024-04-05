@@ -12,7 +12,7 @@ let DB = new KeystonesDB('./path.json', true);
 ## Functions
 
 - `set(key, value, createIfMissing)` - Sets the value of a key. If createIfMissing is true it will create the keys if they are missing. This value is true by default. The key placeholder can hold a path to a key in the form of an array. For example:
-If you wanted to set change the value of key5 from "foo" to "foo bar"
+If you wanted to change the value of key5 from "foo" to "foo bar"
 ```json
 {
     "key1": {
