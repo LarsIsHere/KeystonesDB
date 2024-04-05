@@ -15,6 +15,7 @@ let DB = new KeystonesDB('./path.json', true);
 - `get(key)` - Returns the value of a key. This function also allows for paths in form of arrays
 - `contains(key)` -
 - `remove(key)` -
+- `all()` -
 - 
 - `backup(path, async)` -
   
