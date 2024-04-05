@@ -11,33 +11,19 @@ let DB = new KeystonesDB('./path.json', true);
 
 ## Functions
 
-- `set(key, value, createIfMissing)` - Sets the value of a key. If createIfMissing is true it will create the keys if they are missing. This value is true by default. The key placeholder can hold a path to a key in the form of an array. For example:
-If you wanted to change the value of key5 from "foo" to "foo bar"
-```json
-{
-    "key1": {
-        "key3": "value",
-        "key4": {
-            "key5":"foo"
-        }
-    },
-    "key2":"value"
-}
-```
-```js
-set(['key1','key4','key5'], 'foo bar');
-```
-
-- `get(key)` - Returns the value of a key. This function also allows for paths in form of arrays.
-- `backup(path, async)` -
+- `set(key, value, createIfMissing)` - Sets the value of a key. If createIfMissing is true it will create the keys if they are missing. This value is true by default. The key placeholder can hold a path to a key in the form of an array.
+- `get(key)` - Returns the value of a key. This function also allows for paths in form of arrays
 - `contains(key)` -
 - `remove(key)` -
+- 
+- `backup(path, async)` -
+  
 - `addValue(key, number)` -
 - `subtractValue(key, number)` -
 - `renameKey(oldKey, newKey)` -
 - `isOfType(key, dataType)` -
 - `` - more soon
-#### Arrays
+### Arrays
 - `push(key, value, createIfMissing)` -
 - `removeFromArray(key, value)` -
 - `arrayLength(key)` -
