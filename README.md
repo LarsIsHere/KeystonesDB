@@ -1,5 +1,9 @@
 # KeystonesDB
 KeystonesDB is a simple and lightweight JSON Database
+```npm
+npm install keystonesdb
+
+```
 ```js
 const KeystonesDB = require('keystonesdb');
 
@@ -7,7 +11,7 @@ const KeystonesDB = require('keystonesdb');
 let DB = new KeystonesDB('./path.json', true);
 
 ```
-
+Almost all of the functions below accept a path input in the key parameter for nested keys. ['parentKey', 'childKey',...]
 
 ## Functions
 ### Basics
