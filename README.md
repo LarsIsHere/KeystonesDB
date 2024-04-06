@@ -10,7 +10,7 @@ const KeystonesDB = require('keystonesdb');
 let DB = new KeystonesDB('./path.json', true);
 
 ```
-Almost all of the functions below accept a path input in the key parameter for nested keys. ['parentKey', 'childKey',...]
+Use an array of keys (e.g., ['parentKey', 'childKey', ...]) to specify nested keys within the database. This allows you to access values at deeper levels of the data structure.
 
 ## Functions
 ### Basics
