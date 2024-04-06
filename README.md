@@ -1,5 +1,5 @@
 # KeystonesDB
-KeystonesDB is a simple and lightweight JSON Database purposed for the B4D Project
+KeystonesDB is a simple and lightweight JSON Database
 ```js
 const KeystonesDB = require('keystonesdb');
 
