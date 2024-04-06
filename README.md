@@ -2,7 +2,6 @@
 KeystonesDB is a simple and lightweight JSON Database
 ```npm
 npm install keystonesdb
-
 ```
 ```js
 const KeystonesDB = require('keystonesdb');
