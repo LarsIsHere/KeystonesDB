@@ -1,0 +1,27 @@
+{
+  "name": "keystonesdb",
+  "version": "1.0.1",
+  "description": "KeystonesDB is a simple and lightweight JSON Database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LarsIsHere/KeystonesDB.git"
+  },
+  "keywords": [
+    "json",
+    "database",
+    "easy",
+    "json-db",
+    "lightweight",
+    "keystonesdb"
+  ],
+  "author": "LarsIsHere",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LarsIsHere/KeystonesDB/issues"
+  },
+  "homepage": "https://github.com/LarsIsHere/KeystonesDB#readme"
+}
