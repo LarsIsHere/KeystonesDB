@@ -16,7 +16,7 @@ let DB = new KeystonesDB('./path.json', true);
 - `contains(key)` -
 - `remove(key)` -
 - `all()` -
-- 
+  
 - `backup(path, async)` -
   
 - `addValue(key, number)` -
