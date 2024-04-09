@@ -1,6 +1,6 @@
 {
   "name": "keystonesdb",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "KeystonesDB is a simple and lightweight JSON Database",
   "main": "index.js",
   "scripts": {

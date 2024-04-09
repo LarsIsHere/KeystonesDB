@@ -3,57 +3,86 @@ const fs = require("fs"),
         Worker: e
     } = require("worker_threads");
 class KeystonesDB {
-    constructor(e, t) {
-        this.filePath = e, this.beautify = t, fs.existsSync(e) || fs.writeFileSync(e, "{}"), this.listeners = {
+    constructor(e, r, t = {}) {
+        if (this.filePath = e, this.beautify = r, this.caching = t.caching || "none", this.cache = "{}", fs.existsSync(e) || fs.writeFileSync(e, "{}"), "none" !== this.caching) try {
+            let i = fs.readFileSync(e, "utf8");
+            this.cache = i
+        } catch (s) {
+            console.error("Error reading file:", s)
+        }
+        this.listeners = {
             beforeSet: [],
             afterSet: [],
             beforeRemove: [],
             afterRemove: []
         }
     }
-    on(e, t) {
-        this.listeners[e] && this.listeners[e].push(t)
+    CachingParseFile() {
+        switch (this.caching) {
+            case "none":
+                return JSON.parse(fs.readFileSync(this.filePath));
+            case "write-through":
+                return JSON.parse(this.cache);
+            default:
+                throw Error('"' + this.caching + '" is an invalid caching option. Usable options are "none" and "write-through".')
+        }
     }
-    emit(e, t) {
+    CachingWriteFile(e) {
+        switch (this.caching) {
+            case "none":
+                fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(e, null, 2) : JSON.stringify(e));
+                break;
+            case "write-through":
+                this.cache = this.beautify ? JSON.stringify(e, null, 2) : JSON.stringify(e), fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(e, null, 2) : JSON.stringify(e));
+                break;
+            default:
+                throw Error('"' + this.caching + '" is an invalid caching option. Usable options are "none" and "write-through".')
+        }
+    }
+    on(e, r) {
+        this.listeners[e] && this.listeners[e].push(r)
+    }
+    emit(e, r) {
         this.listeners[e] && this.listeners[e].forEach(e => {
-            e(t)
+            e(r)
         })
     }
-    set(e, t, r = !0) {
-        let i = JSON.parse(fs.readFileSync(this.filePath)),
+    set(e, r, t = !0) {
+        let i = this.CachingParseFile(),
             s = i;
         if (this.emit("beforeSet", {
                 pathOrKey: e,
-                value: t
-            }), "string" == typeof e) s[e] = t;
+                value: r
+            }), "string" == typeof e) s[e] = r;
         else if (Array.isArray(e)) {
-            for (let f = 0; f < e.length - 1; f++) {
-                if (!s[e[f]]) {
-                    if (!r) return;
-                    s[e[f]] = {}
+            for (let n = 0; n < e.length - 1; n++) {
+                if (!s[e[n]]) {
+                    if (!t) return;
+                    s[e[n]] = {}
                 }
-                s = s[e[f]]
+                s = s[e[n]]
             }
-            s[e[e.length - 1]] = t
+            s[e[e.length - 1]] = r
         }
-        fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(i, null, 2) : JSON.stringify(i)), this.emit("afterSet", {
+        this.CachingWriteFile(i), this.emit("afterSet", {
             pathOrKey: e,
-            value: t
+            value: r
         })
     }
     get(e) {
-        let t = JSON.parse(fs.readFileSync(this.filePath));
-        if ("string" == typeof e) return t[e];
+        let r = this.CachingParseFile(),
+            t = r;
+        if (console.log(r), "string" == typeof e) return t[e];
         if (Array.isArray(e)) {
-            for (let r = 0; r < e.length; r++) {
-                if (!t[e[r]]) return;
-                t = t[e[r]]
+            for (let i = 0; i < e.length; i++) {
+                if (!t[e[i]]) return;
+                t = t[e[i]]
             }
             return t
         }
     }
-    backup(t, r = !1) {
-        if (r) {
+    backup(r, t = !1) {
+        if (t) {
             let i = new e(`
               const fs = require('fs');
               const path = require('path');
@@ -67,7 +96,7 @@ class KeystonesDB {
           `, {
                 eval: !0,
                 workerData: {
-                    backupFilePath: t,
+                    backupFilePath: r,
                     filePath: this.filePath
                 }
             });
@@ -80,220 +109,220 @@ class KeystonesDB {
             })
         } else {
             let s = fs.readFileSync(this.filePath);
-            fs.writeFileSync(t, s)
+            fs.writeFileSync(r, s)
         }
     }
     contains(e) {
-        let t = JSON.parse(fs.readFileSync(this.filePath));
-        if ("string" == typeof e) return t.hasOwnProperty(e);
+        let r = this.CachingParseFile();
+        if ("string" == typeof e) return r.hasOwnProperty(e);
         if (Array.isArray(e)) {
-            for (let r = 0; r < e.length; r++) {
-                if (!t[e[r]]) return !1;
-                t = t[e[r]]
+            for (let t = 0; t < e.length; t++) {
+                if (!r[e[t]]) return !1;
+                r = r[e[t]]
             }
             return !0
         }
         return !1
     }
     remove(e) {
-        let t = JSON.parse(fs.readFileSync(this.filePath)),
-            r = t;
+        let r = this.CachingParseFile(),
+            t = r;
         if (this.emit("beforeRemove", {
                 pathOrKey: e
-            }), "string" == typeof e) delete r[e];
+            }), "string" == typeof e) delete t[e];
         else if (Array.isArray(e)) {
             for (let i = 0; i < e.length - 1; i++) {
-                if (!r[e[i]]) return;
-                r = r[e[i]]
+                if (!t[e[i]]) return;
+                t = t[e[i]]
             }
-            delete r[e[e.length - 1]]
+            delete t[e[e.length - 1]]
         }
-        fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(t, null, 2) : JSON.stringify(t)), this.emit("afterRemove", {
+        this.CachingWriteFile(r), this.emit("afterRemove", {
             pathOrKey: e
         })
     }
-    push(e, t, r = !0) {
-        let i = JSON.parse(fs.readFileSync(this.filePath)),
+    push(e, r, t = !0) {
+        let i = this.CachingParseFile(),
             s = i;
         if ("string" == typeof e) {
             if (!s[e]) {
-                if (!r) return;
+                if (!t) return;
                 s[e] = []
             }
-            s[e].push(t)
+            s[e].push(r)
         } else if (Array.isArray(e)) {
-            for (let f = 0; f < e.length - 1; f++) {
-                if (!s[e[f]]) {
-                    if (!r) return;
-                    s[e[f]] = {}
+            for (let n = 0; n < e.length - 1; n++) {
+                if (!s[e[n]]) {
+                    if (!t) return;
+                    s[e[n]] = {}
                 }
-                s = s[e[f]]
+                s = s[e[n]]
             }
             if (!s[e[e.length - 1]]) {
-                if (!r) return;
+                if (!t) return;
                 s[e[e.length - 1]] = []
             }
-            s[e[e.length - 1]].push(t)
+            s[e[e.length - 1]].push(r)
         }
-        fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(i, null, 2) : JSON.stringify(i))
+        this.CachingWriteFile(i)
     }
-    removeFromArray(e, t) {
-        let r = JSON.parse(fs.readFileSync(this.filePath)),
-            i = r;
+    removeFromArray(e, r) {
+        let t = this.CachingParseFile(),
+            i = t;
         if ("string" == typeof e) {
             if (!i[e] || !Array.isArray(i[e])) return;
-            i[e] = i[e].filter(e => e !== t)
+            i[e] = i[e].filter(e => e !== r)
         } else if (Array.isArray(e)) {
             for (let s = 0; s < e.length - 1; s++) {
                 if (!i[e[s]]) return;
                 i = i[e[s]]
             }
             if (!i[e[e.length - 1]] || !Array.isArray(i[e[e.length - 1]])) return;
-            i[e[e.length - 1]] = i[e[e.length - 1]].filter(e => e !== t)
+            i[e[e.length - 1]] = i[e[e.length - 1]].filter(e => e !== r)
         }
-        fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(r, null, 2) : JSON.stringify(r))
+        this.CachingWriteFile(t)
     }
     arrayLength(e) {
-        let t = JSON.parse(fs.readFileSync(this.filePath));
-        if ("string" == typeof e) return t[e] && Array.isArray(t[e]) ? t[e].length : 0;
+        let r = this.CachingParseFile();
+        if ("string" == typeof e) return r[e] && Array.isArray(r[e]) ? r[e].length : 0;
         if (Array.isArray(e)) {
-            for (let r = 0; r < e.length; r++) {
-                if (!t[e[r]]) return 0;
-                t = t[e[r]]
+            for (let t = 0; t < e.length; t++) {
+                if (!r[e[t]]) return 0;
+                r = r[e[t]]
             }
-            return Array.isArray(t) ? t.length : 0
+            return Array.isArray(r) ? r.length : 0
         }
         return 0
     }
-    getItemFromArray(e, t) {
-        let r = JSON.parse(fs.readFileSync(this.filePath));
-        if ("string" == typeof e) return r[e] && Array.isArray(r[e]) ? r[e][t] : void 0;
+    getItemFromArray(e, r) {
+        let t = this.CachingParseFile();
+        if ("string" == typeof e) return t[e] && Array.isArray(t[e]) ? t[e][r] : void 0;
         if (Array.isArray(e)) {
             for (let i = 0; i < e.length; i++) {
-                if (!r[e[i]]) return;
-                r = r[e[i]]
+                if (!t[e[i]]) return;
+                t = t[e[i]]
             }
-            return Array.isArray(r) ? r[t] : void 0
+            return Array.isArray(t) ? t[r] : void 0
         }
     }
-    updateItemInArray(e, t, r) {
-        let i = JSON.parse(fs.readFileSync(this.filePath)),
+    updateItemInArray(e, r, t) {
+        let i = this.CachingParseFile(),
             s = i;
-        if ("string" == typeof e) s[e] && Array.isArray(s[e]) && void 0 !== s[e][t] && (s[e][t] = r);
+        if ("string" == typeof e) s[e] && Array.isArray(s[e]) && void 0 !== s[e][r] && (s[e][r] = t);
         else if (Array.isArray(e)) {
-            for (let f = 0; f < e.length; f++) {
-                if (!s[e[f]]) return;
-                s = s[e[f]]
+            for (let n = 0; n < e.length; n++) {
+                if (!s[e[n]]) return;
+                s = s[e[n]]
             }
-            Array.isArray(s) && void 0 !== s[t] && (s[t] = r)
+            Array.isArray(s) && void 0 !== s[r] && (s[r] = t)
         }
-        fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(i, null, 2) : JSON.stringify(i))
+        this.CachingWriteFile(i)
     }
-    containsItemInArray(e, t) {
-        let r = JSON.parse(fs.readFileSync(this.filePath));
-        if ("string" == typeof e) return !!(r[e] && Array.isArray(r[e])) && r[e].includes(t);
+    containsItemInArray(e, r) {
+        let t = this.CachingParseFile();
+        if ("string" == typeof e) return !!(t[e] && Array.isArray(t[e])) && t[e].includes(r);
         if (Array.isArray(e)) {
             for (let i = 0; i < e.length; i++) {
-                if (!r[e[i]]) return !1;
-                r = r[e[i]]
+                if (!t[e[i]]) return !1;
+                t = t[e[i]]
             }
-            return !!Array.isArray(r) && r.includes(t)
+            return !!Array.isArray(t) && t.includes(r)
         }
         return !1
     }
     clearArray(e) {
-        let t = JSON.parse(fs.readFileSync(this.filePath)),
-            r = t;
-        if ("string" == typeof e) r[e] && Array.isArray(r[e]) && (r[e] = []);
+        let r = this.CachingParseFile(),
+            t = r;
+        if ("string" == typeof e) t[e] && Array.isArray(t[e]) && (t[e] = []);
         else if (Array.isArray(e)) {
             for (let i = 0; i < e.length; i++) {
-                if (!r[e[i]]) return;
-                r = r[e[i]]
+                if (!t[e[i]]) return;
+                t = t[e[i]]
             }
-            Array.isArray(r) && (r = [])
+            Array.isArray(t) && (t = [])
         }
-        fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(t, null, 2) : JSON.stringify(t))
+        this.CachingWriteFile(r)
     }
-    addValue(e, t) {
-        let r = JSON.parse(fs.readFileSync(this.filePath)),
-            i = r;
-        if ("string" == typeof e) "number" == typeof i[e] && (i[e] += t);
+    addValue(e, r) {
+        let t = this.CachingParseFile(),
+            i = t;
+        if ("string" == typeof e) "number" == typeof i[e] && (i[e] += r);
         else if (Array.isArray(e)) {
             for (let s = 0; s < e.length - 1; s++) {
                 if (!i[e[s]]) return;
                 i = i[e[s]]
             }
-            "number" == typeof i[e[e.length - 1]] && (i[e[e.length - 1]] += t)
+            "number" == typeof i[e[e.length - 1]] && (i[e[e.length - 1]] += r)
         }
-        fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(r, null, 2) : JSON.stringify(r))
+        this.CachingWriteFile(t)
     }
-    subtractValue(e, t) {
-        let r = JSON.parse(fs.readFileSync(this.filePath)),
-            i = r;
-        if ("string" == typeof e) "number" == typeof i[e] && (i[e] -= t);
+    subtractValue(e, r) {
+        let t = this.CachingParseFile(),
+            i = t;
+        if ("string" == typeof e) "number" == typeof i[e] && (i[e] -= r);
         else if (Array.isArray(e)) {
             for (let s = 0; s < e.length - 1; s++) {
                 if (!i[e[s]]) return;
                 i = i[e[s]]
             }
-            "number" == typeof i[e[e.length - 1]] && (i[e[e.length - 1]] -= t)
+            "number" == typeof i[e[e.length - 1]] && (i[e[e.length - 1]] -= r)
         }
-        fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(r, null, 2) : JSON.stringify(r))
+        this.CachingWriteFile(t)
     }
     all() {
         return JSON.parse(fs.readFileSync(this.filePath))
     }
-    renameKey(e, t) {
-        let r = JSON.parse(fs.readFileSync(this.filePath));
-        return !!r.hasOwnProperty(e) && (r[t] = r[e], delete r[e], fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(r, null, 2) : JSON.stringify(r)), !0)
+    renameKey(e, r) {
+        let t = this.CachingParseFile();
+        return !!t.hasOwnProperty(e) && (t[r] = t[e], delete t[e], this.CachingWriteFile(t), !0)
     }
-    matchesCondition(e, t) {
-        JSON.parse(fs.readFileSync(this.filePath));
-        let r = this.get(e);
-        return void 0 !== r && t(r)
+    matchesCondition(e, r) {
+        this.CachingParseFile();
+        let t = this.get(e);
+        return void 0 !== t && r(t)
     }
-    filterArray(e, t) {
-        let r = JSON.parse(fs.readFileSync(this.filePath)),
-            i = r;
+    filterArray(e, r) {
+        let t = this.CachingParseFile(),
+            i = t;
         if ("string" == typeof e) {
             if (!i[e] || !Array.isArray(i[e])) return [];
-            i[e] = i[e].filter(t)
+            i[e] = i[e].filter(r)
         } else if (Array.isArray(e)) {
             for (let s = 0; s < e.length - 1; s++) {
                 if (!i[e[s]]) return [];
                 i = i[e[s]]
             }
             if (!i[e[e.length - 1]] || !Array.isArray(i[e[e.length - 1]])) return [];
-            i[e[e.length - 1]] = i[e[e.length - 1]].filter(t)
+            i[e[e.length - 1]] = i[e[e.length - 1]].filter(r)
         }
-        return fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(r, null, 2) : JSON.stringify(r)), i[e]
+        return this.CachingWriteFile(t), i[e]
     }
-    isOfType(e, t) {
-        let r = JSON.parse(fs.readFileSync(this.filePath));
-        if ("string" == typeof e) return typeof r[e] === t;
+    isOfType(e, r) {
+        let t = this.CachingParseFile();
+        if ("string" == typeof e) return typeof t[e] === r;
         if (Array.isArray(e)) {
             for (let i = 0; i < e.length; i++) {
-                if (!r[e[i]]) return !1;
-                r = r[e[i]]
+                if (!t[e[i]]) return !1;
+                t = t[e[i]]
             }
-            return typeof r === t
+            return typeof t === r
         }
         return !1
     }
     restore(e) {
         try {
-            let t = fs.readFileSync(e, "utf-8"),
-                r = JSON.parse(t);
-            fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(r, null, 2) : JSON.stringify(r)), console.log("Database restored successfully from backup.")
+            let r = fs.readFileSync(e, "utf-8"),
+                t = JSON.parse(r);
+            this.CachingWriteFile(t), console.log("Database restored successfully from backup.")
         } catch (i) {
             console.error("Error restoring database from backup:", i.message)
         }
     }
     import(e) {
         try {
-            let t = fs.readFileSync(e, "utf-8"),
-                r = JSON.parse(t);
-            fs.writeFileSync(this.filePath, this.beautify ? JSON.stringify(r, null, 2) : JSON.stringify(r)), console.log("Data imported successfully.")
+            let r = fs.readFileSync(e, "utf-8"),
+                t = JSON.parse(r);
+            this.CachingWriteFile(t), console.log("Data imported successfully.")
         } catch (i) {
             console.error("Error importing data:", i.message)
         }

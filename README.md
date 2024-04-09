@@ -6,8 +6,10 @@ npm install keystonesdb
 ```js
 const KeystonesDB = require('keystonesdb');
 
-// Creating the database -> path of db, format json
-let DB = new KeystonesDB('./path.json', true);
+// Creating the database -> path of db, format json, other options
+let DB = new KeystonesDB('./path.json', true, {
+  caching: 'none'
+});
 
 ```
 Use an array of keys (e.g., `['parentKey', 'childKey', ...]`) to specify nested keys within the database. This allows you to access values at deeper levels of the data structure.
@@ -64,6 +66,12 @@ DB.on('afterRemove', ({ pathOrKey }) => {
   console.log(`After removing key at ${pathOrKey}`);
 });
 ```
-
+### Caching
+Since of v1.1.0 You can use a very basic version of caching in your database allowing for faster loading times. Caching works completely automatically and you don't have to setup anything besides setting the `caching` value to your preferred method.
+| Caching Method  | Description                                                                                                                                                                                                                                                                   |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `write-through` | This method first writes data to a cache and then to the database. It's efficient for smaller databases, enhancing data retrieval speed. However, as the database grows, updating the cache with every write can slow down the database due to increased management overhead. |
 
 ## Changelog
+
+v1.1.0 - Added basic "Write-Through" Caching
