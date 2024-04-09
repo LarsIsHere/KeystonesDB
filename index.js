@@ -70,15 +70,14 @@ class KeystonesDB {
         })
     }
     get(e) {
-        let r = this.CachingParseFile(),
-            t = r;
-        if (console.log(r), "string" == typeof e) return t[e];
+        let r = this.CachingParseFile();
+        if ("string" == typeof e) return r[e];
         if (Array.isArray(e)) {
-            for (let i = 0; i < e.length; i++) {
-                if (!t[e[i]]) return;
-                t = t[e[i]]
+            for (let t = 0; t < e.length; t++) {
+                if (!r[e[t]]) return;
+                r = r[e[t]]
             }
-            return t
+            return r
         }
     }
     backup(r, t = !1) {
