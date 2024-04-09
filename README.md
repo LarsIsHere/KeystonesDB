@@ -66,6 +66,31 @@ DB.on('afterRemove', ({ pathOrKey }) => {
   console.log(`After removing key at ${pathOrKey}`);
 });
 ```
+
+### Conditions
+Using the MatchesCondition method we can check if a certain key matches our provided condition. You can use about almost any conditioning you can think about including regex
+A couple of examples:
+Check if a user is older than 18
+```js
+const isOver18 = value => value >= 18;
+console.log(DB.matchesCondition(['user', 'age'], isOver18)); // Output: true
+```
+Check if an email is valid using regex
+```js
+const isValidEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+console.log(DB.matchesCondition('email', isValidEmail));
+```
+Their age is between 25 and 40.
+They have a job title containing the word "Engineer".
+They are active employees (i.e., their isActive status is true).
+```js
+const isDesiredEmployee = employee => {
+    return employee.age >= 25 && employee.age <= 40 &&
+           employee.jobTitle.includes('Engineer') &&
+           employee.isActive === true;
+};
+console.log(DB.matchesCondition(['employees', '123'], isDesiredEmployee));
+```
 ### Caching
 (This is a new feature and is subject to bugs and problems. Importing and Restoring might not work as expected)
 
