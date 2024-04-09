@@ -100,5 +100,6 @@ Since of v1.1.0 You can use a very basic version of caching in your database all
 | `write-through` | This method first writes data to a cache and then to the database. It's efficient for smaller databases, enhancing data retrieval speed. However, as the database grows, updating the cache with every write can slow down the database due to increased management overhead. |
 
 ## Changelog
+v1.1.2 - Get method spams keys fix
 v1.1.1 - Updated README
 v1.1.0 - Added basic "Write-Through" Caching
