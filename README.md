@@ -73,7 +73,7 @@ A couple of examples:
 Check if a user is older than 18
 ```js
 const isOver18 = value => value >= 18;
-console.log(DB.matchesCondition(['user', 'age'], isOver18)); // Output: true
+console.log(DB.matchesCondition(['user', 'age'], isOver18)); // Output: true/false
 ```
 Check if an email is valid using regex
 ```js
