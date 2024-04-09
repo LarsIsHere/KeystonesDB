@@ -67,7 +67,7 @@ DB.on('afterRemove', ({ pathOrKey }) => {
 });
 ```
 
-### Conditions
+## Conditions
 Using the MatchesCondition method we can check if a certain key matches our provided condition. You can use about almost any conditioning you can think about including regex.
 A couple of examples:
 Check if a user is older than 18
@@ -91,7 +91,7 @@ const isDesiredEmployee = employee => {
 };
 console.log(DB.matchesCondition(['employees', '123'], isDesiredEmployee));
 ```
-### Caching
+## Caching
 (This is a new feature and is subject to bugs and problems. Importing and Restoring might not work as expected)
 
 Since of v1.1.0 You can use a very basic version of caching in your database allowing for faster loading times. Caching works completely automatically and you don't have to setup anything besides setting the `caching` value to your preferred method.
