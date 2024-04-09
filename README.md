@@ -68,12 +68,12 @@ DB.on('afterRemove', ({ pathOrKey }) => {
 ```
 
 ### Conditions
-Using the MatchesCondition method we can check if a certain key matches our provided condition. You can use about almost any conditioning you can think about including regex
+Using the MatchesCondition method we can check if a certain key matches our provided condition. You can use about almost any conditioning you can think about including regex.
 A couple of examples:
 Check if a user is older than 18
 ```js
 const isOver18 = value => value >= 18;
-console.log(DB.matchesCondition(['user', 'age'], isOver18)); // Output: true/false
+console.log(DB.matchesCondition(['user', 'age'], isOver18)); 
 ```
 Check if an email is valid using regex
 ```js
@@ -100,5 +100,5 @@ Since of v1.1.0 You can use a very basic version of caching in your database all
 | `write-through` | This method first writes data to a cache and then to the database. It's efficient for smaller databases, enhancing data retrieval speed. However, as the database grows, updating the cache with every write can slow down the database due to increased management overhead. |
 
 ## Changelog
-
+v1.1.1 - Updated README
 v1.1.0 - Added basic "Write-Through" Caching
